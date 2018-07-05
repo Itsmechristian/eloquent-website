@@ -1,0 +1,22 @@
+{
+  "name": "eloquent",
+  "version": "1.0.0",
+  "description": "Eloquent Website",
+  "main": "server.js",
+  "scripts": {
+    "install-all": "concurrently \"npm install\" \"npm install --prefix client\"",
+    "start-server": "nodemon server.js",
+    "start-client": "npm start --prefix client",
+    "build-client": "npm run --prefix client build",
+    "build-report": "npm run --prefix client build --report",
+    "dev": "concurrently \" npm run start-server \" \" npm run start-client\"",
+    "prod": "concurrently \"pm2 start server.js\" \"cd client && pm2 start server.js && cd ..\""
+  },
+  "author": "Sijey",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^3.6.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.3"
+  }
+}
