@@ -9,7 +9,7 @@
             <p>SITE LANGUAGE: English</p>
             <p>FOLLOW US</p>
             <div class="icons" v-for="icon of icons" :key="icon.src">
-              <img :src="icon.src" :alt="icon.name" height="15" width="15">
+              <img class="icon" :src="icon.src" :alt="icon.name" height="15" width="15">
             </div>
           </div>
          </div>    
@@ -21,11 +21,11 @@
             </div>
             <div class="middle">
               <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Courses</a></li>
-                <li><a href="#">Instructiors</a></li>
-                <li><a href="#">Blog</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><router-link active-class="active" to="/" exact>Home</router-link></li>
+                <li><router-link active-class="active" to="/courses">Courses</router-link></li>
+                <li><router-link active-class="active" to="/instructors">Instructors</router-link></li>
+                <li><router-link active-class="active" to="/blog">Blog</router-link></li>
+                <li><router-link active-class="active" to="/contact">Contact</router-link></li>
               </ul>
             </div>
                 <div class="right">
@@ -48,20 +48,32 @@ export default {
       icons: []
     };
   },
-  methods: {
-    handleScroll: function() {}
-  },
   created() {
     window.addEventListener("scroll", this.handleScroll);
 
+    // @route  GET '/api/icons'
+    // @desc   GET Top Nav Icons
+    // @access PUBLIC
     axios
-      .get("http://localhost:8000/api/icons")
+      .get("http://localhost:5501/api/icons")
       .then(res => (this.icons = res.data));
+  },
+  methods: {
+    handleScroll: function() {}
   }
 };
 </script>
 
 <style scoped>
+@font-face {
+  font-family: "OpenSans-Bold";
+  src: url("../assets/fonts/OpenSans-Bold.ttf");
+}
+@font-face {
+  font-family: "OpenSans-Semibold";
+  src: url("../assets/fonts/OpenSans-Bold.ttf");
+}
+
 p {
   font-size: 14px;
 }
@@ -98,16 +110,19 @@ p {
 }
 .bottom-nav .container {
   display: flex;
+  padding: 10px 0px;
 }
 .bottom-nav .container .left {
   flex: 2;
 }
 .bottom-nav .container .left h1 {
   color: #82ca9c;
+  font-family: "OpenSans-Bold";
+  font-weight: bold;
   font-size: 1.4rem;
 }
 .bottom-nav .container .middle {
-  flex: 1;
+  flex: 1.5;
 }
 .bottom-nav .container .middle ul {
   margin: 0;
@@ -115,6 +130,15 @@ p {
 }
 .bottom-nav .container .middle ul li {
   display: inline-block;
+  padding: 10px 0px;
+}
+.bottom-nav .container .middle ul li a {
+  font-family: "OpenSans-Semibold";
+  color: rgba(0, 0, 0, 0.45);
+  padding: 0px 5px;
+}
+.bottom-nav .container .middle ul li a.active {
+  color: #333;
 }
 .bottom-nav .container .right {
   flex: 1;
