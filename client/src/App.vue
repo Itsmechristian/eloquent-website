@@ -58,6 +58,10 @@ p {
   font-family: "OpenSans-Semibold";
   color: #838282;
 }
+small {
+  font-size: 0.7rem;
+  font-family: OpenSans-Semibold;
+}
 .container {
   width: 70%;
   height: 100%;

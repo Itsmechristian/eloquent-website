@@ -14,7 +14,7 @@
           </div>
          </div>    
         </div>
-        <div class="bottom-nav">
+        <div class="bottom-nav" id="bottom">
           <div class="container">
             <div class="left">
               <h1>Eloquent</h1>
@@ -35,7 +35,7 @@
                        <path v-bind:class="{ clicked: magnifyClicked }" d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z " fill="#838282"/>
                        </g>
                     </svg>
-                     <input type="text" name="search" id="search" placeholder="Search..." v-bind:class="{ clicked: magnifyClicked }">
+                     <input v-model="searchValue" type="text" name="search" id="search" placeholder="Search..." v-bind:class="{ clicked: magnifyClicked }">
                 </div>
                 <div class="user">
                   <img src="../assets/images/user.png" alt="user" height="30" width="30">
@@ -54,7 +54,9 @@ export default {
     return {
       isScrolled: false,
       icons: [],
-      magnifyClicked: false
+      magnifyClicked: false,
+      recentPath: "",
+      searchValue: ""
     };
   },
   created() {
@@ -66,11 +68,38 @@ export default {
     axios
       .get("http://localhost:5501/api/icons")
       .then(res => (this.icons = res.data));
+
+    let fullPath = this.$router.history.current.fullPath;
+    this.recentPath = fullPath;
   },
   methods: {
-    handleScroll: function() {},
+    handleScroll: function() {
+      window.pageYOffset > 100
+        ? (this.isScrolled = true)
+        : (this.isScrolled = false);
+    },
     isMagnifyClicked: function() {
       this.magnifyClicked = !this.magnifyClicked;
+    },
+    navigate(val) {
+      this.$router.push(`/search?q=${val}`);
+    },
+    goBack(recentPath) {
+      this.$router.push(`${recentPath}`);
+    }
+  },
+  watch: {
+    searchValue: function(val, oldVal) {
+      if (val === "") {
+        this.goBack(this.recentPath);
+      } else if (val) {
+        this.navigate(val);
+      }
+    },
+    $route(e) {
+      if (e.path !== "/search") {
+        this.recentPath = e.fullPath;
+      }
     }
   }
 };
@@ -91,13 +120,22 @@ p {
 }
 
 #navbar {
-  height: 100%;
   width: 100%;
   background: #fff;
   display: block;
+  top: 0px;
+  position: fixed;
+  width: 100%;
+  background: #fff;
+  transition: all ease 200ms;
+  -webkit-transition: all ease 200ms;
+  -moz-transition: all ease 200ms;
+  -o-transition: all ease 200ms;
+  z-index: 99999;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.025);
 }
 #navbar.scrolled {
-  background: #fff;
+  top: -48px;
 }
 .top-nav {
   border-bottom: 1px solid #ebebeb;
@@ -125,18 +163,32 @@ p {
   padding: 10px 0px;
 }
 .bottom-nav .container .left {
-  flex: 2;
+  flex: 1;
 }
 .bottom-nav .container .left h1 {
   color: #82ca9c;
   font-family: "OpenSans-Bold";
   font-weight: bold;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
+  transform: scale(1);
+  background: #fff;
+  transition: all ease-in-out 200ms;
+  -webkit-transition: all ease-in-out 200ms;
+  -moz-transition: all ease-in-out 200ms;
+  -o-transition: all ease-in-out 200ms;
+}
+#navbar.scrolled .bottom-nav .container .left h1 {
+  -moz-transform: scale(0.8);
+  -webkit-transform: scale(0.8);
+  transform: scale(0.8);
+  padding: 5px 0px;
+  transform-origin: left;
 }
 .bottom-nav .container .middle {
-  flex: 2;
+  flex: 3;
 }
 .bottom-nav .container .middle ul {
+  text-align: right;
   margin: 0;
   padding: 0;
 }
@@ -166,7 +218,7 @@ p {
   -o-transition: all 0.3s ease-in-out;
   -ms-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  left: 200px;
+  left: 220px;
 }
 .bottom-nav .container .right .search-bar.clicked {
   -webkit-transition: all 0.3s ease-in-out;
@@ -174,7 +226,7 @@ p {
   -o-transition: all 0.3s ease-in-out;
   -ms-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  left: 0;
+  left: 50px;
 }
 .bottom-nav .container .right .search-bar svg {
   display: inline-block;
@@ -195,12 +247,13 @@ p {
   display: inline-block;
   vertical-align: middle;
   height: 30px;
+  width: 75%;
   border-top: none;
   border-left: none;
   border-right: none;
   border-bottom: 1px solid #b6b6b6;
   outline: none;
-  padding: 5px 25px;
+  padding: 5px 0px 5px 25px;
   z-index: -999;
   -webkit-transition: opacity 0.1s ease-in-out;
   -moz-transition: opacity 0.1s ease-in-out;
@@ -210,18 +263,18 @@ p {
   opacity: 0;
 }
 .bottom-nav .container .right .search-bar input.clicked {
-  -webkit-transition: opacity 1.5s ease-in;
-  -moz-transition: opacity 1.5s ease-in;
-  -o-transition: opacity 1.5s ease-in;
-  -ms-transition: opacity 1.5s ease-in;
-  transition: opacity 1.5s ease-in;
+  -webkit-transition: opacity 1.3s ease-in;
+  -moz-transition: opacity 1.3s ease-in;
+  -o-transition: opacity 1.3s ease-in;
+  -ms-transition: opacity 1.3s ease-in;
+  transition: opacity 1.3s ease-in;
   background: transparent;
   opacity: 1;
 }
 .bottom-nav .container .right .user {
+  float: right;
   vertical-align: middle;
-  display: inline-block;
-  width: 7%;
+  width: 11%;
   padding: 5px 0px;
 }
 </style>
